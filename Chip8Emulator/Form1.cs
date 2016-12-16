@@ -16,11 +16,5 @@ namespace Chip8Emulator
         {
             InitializeComponent();
         }
-
-        public void ClearScreen()
-        {
-            chip8Screen.InitialImage = null;
-            chip8Screen.Image = null;
-        }
     }
 }

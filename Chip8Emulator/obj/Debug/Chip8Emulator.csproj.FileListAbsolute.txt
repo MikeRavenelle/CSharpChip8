@@ -1,1 +1,2 @@
 c:\users\mike\documents\visual studio 2015\Projects\Chip8Emulator\Chip8Emulator\bin\Debug\Chip8Emulator.exe.config
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\Chip8Emulator.exe.config
