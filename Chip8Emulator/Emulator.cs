@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Threading;
 using System.Timers;
 
@@ -131,8 +132,9 @@ namespace Chip8Emulator
                     default: break; //not yet handled
                 }
 
+                CheckSound();
                 _screenGame.UpdateEmulator(_screenData);
-                Thread.Sleep(1700);
+                Thread.Sleep(17);
             }
         }
 
@@ -411,7 +413,7 @@ namespace Chip8Emulator
                 {
                     int mask = 1 << xpixerlinv;
 
-                    if ((data & mask) == 1)
+                    if ((data & mask) > 0)
                     {
                         int x = coordx + xpixel;
                         int y = coordy + yline;
@@ -537,6 +539,14 @@ namespace Chip8Emulator
             }
 
             _addressI = (ushort)(_addressI + regx + 1);
+        }
+
+        public void CheckSound()
+        {
+            if(_audioTimer > 0)
+            {
+                SystemSounds.Beep.Play();
+            }
         }
     }
 }
