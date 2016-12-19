@@ -2,34 +2,40 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Media;
+using System.Threading;
+using System.Timers;
 
 namespace Chip8Emulator
 {
     class Emulator
     {
+        //Hardware
         byte[] _gameMemory = new byte[0xFFF];
         byte[] _registers = new byte[16];
         ushort _addressI;
         ushort _programCounter;
         List<ushort> _stack = new List<ushort>();
-        byte[,] _screenData = new byte[64,32];
-        bool _runLoop;
-        Form1 _mainForm;
+        byte[,] _screenData = new byte[64, 32];
+        int _audioTimer;
+        int _delayTimer;
+
+        //C# Variables
+        Game1 _screenGame;
         Random _random = new Random();
 
+        //Font Array
         byte[] _font = { 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10,
                         0xF0, 0x90, 0x090, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20,
                         0x40, 0x40, 0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90,
                         0xE0, 0x90,0xE0, 0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0,
                         0x80, 0xF0, 0x80, 0x80 };
 
-        public Emulator(Form1 mainForm)
+        public Emulator(Game1 game)
         {
             _programCounter = 0x200;
             _addressI = 0;
-            _mainForm = mainForm;
+            _screenGame = game;
         }
 
         public void CPUReset()
@@ -40,9 +46,9 @@ namespace Chip8Emulator
 
         public void ReadGame(string gamePath)
         {
-            FileStream fileStream = new FileStream(gamePath,FileMode.Open ,FileAccess.Read);
-            fileStream.Read(_gameMemory, 0x200, 0xfff);
-
+            FileStream fileStream = new FileStream(gamePath, FileMode.Open, FileAccess.Read);
+            fileStream.Read(_gameMemory, 0x200, 0xdff);
+            MainLoop();
         }
 
         public ushort GetNextOpCode()
@@ -58,7 +64,7 @@ namespace Chip8Emulator
 
         public void MainLoop()
         {
-            while (_runLoop)
+            while (true)
             {
                 ushort opcode = GetNextOpCode();
 
@@ -81,8 +87,8 @@ namespace Chip8Emulator
                     case 0x8000:
                         switch (opcode & 0x000F)
                         {
-                            case 0x0000: Opcode8XY0(opcode); break; 
-                            case 0x0001: Opcode8XY1(opcode); break; 
+                            case 0x0000: Opcode8XY0(opcode); break;
+                            case 0x0001: Opcode8XY1(opcode); break;
                             case 0x0002: Opcode8XY2(opcode); break;
                             case 0x0003: Opcode8XY3(opcode); break;
                             case 0x0004: Opcode8XY4(opcode); break;
@@ -105,27 +111,37 @@ namespace Chip8Emulator
                         }
                         break;
                     case 0xF000:
-                        switch(opcode & 0x000F)
+                        switch (opcode & 0x000F)
                         {
                             case 0x0003: OpcodeFX33(opcode); break;
                             case 0x0005:
-                                switch(opcode & 0x00F0)
+                                switch (opcode & 0x00F0)
                                 {
+                                    case 0x0010: OpcodeFX15(opcode); break;
                                     case 0x0050: OpcodeFX55(opcode); break;
                                     case 0x0060: OpcodeFX65(opcode); break;
                                 }
                                 break;
+                            case 0x0007: OpcodeFX07(opcode); break;
+                            case 0x000A: OpcodeFX0A(opcode); break;
+                            case 0x0008: OpcodeFX18(opcode); break;
+                            case 0x000E: OpcodeFX1E(opcode); break;
+                            case 0x0009: OpcodeFX29(opcode); break;
                         }
                         break;
                     default: break; //not yet handled
                 }
+
+                CheckSound();
+                _screenGame.UpdateEmulator(_screenData);
+                Thread.Sleep(17);
             }
         }
 
         //00E0	Display disp_clear()    Clears the screen.
         public void Opcode00E0(ushort opcode)
         {
-            //TODO CLEAR SCREEN
+            _screenGame.ClearEmulator();
         }
 
         //00EE Flow	return; Returns from a subroutine.
@@ -156,7 +172,7 @@ namespace Chip8Emulator
 
             int value = opcode & 0x00FF;
 
-            if(_registers[regx] == value)
+            if (_registers[regx] == value)
             {
                 _programCounter += 2;
             }
@@ -186,7 +202,7 @@ namespace Chip8Emulator
             int regy = opcode & 0x00F0;
             regy = regy >> 4;
 
-            if(_registers[regx] == _registers[regy])
+            if (_registers[regx] == _registers[regy])
             {
                 _programCounter += 2;
             }
@@ -386,7 +402,7 @@ namespace Chip8Emulator
 
             _registers[0xf] = 0;
 
-            for(int yline = 0; yline < height; ++yline)
+            for (int yline = 0; yline < height; ++yline)
             {
                 byte data = _gameMemory[_addressI + yline];
 
@@ -397,12 +413,12 @@ namespace Chip8Emulator
                 {
                     int mask = 1 << xpixerlinv;
 
-                    if((data & mask) == 1)
+                    if ((data & mask) > 0)
                     {
                         int x = coordx + xpixel;
                         int y = coordy + yline;
 
-                        if(_screenData[x,y] == 1)
+                        if (_screenData[x, y] == 1)
                         {
                             _registers[0xF] = 1;
                         }
@@ -429,7 +445,10 @@ namespace Chip8Emulator
         //FX07	Timer	Vx = get_delay()	Sets VX to the value of the delay timer.
         public void OpcodeFX07(ushort opcode)
         {
-            //TODO timer
+            int timerValue = opcode & 0x0F00;
+            timerValue = timerValue >> 8;
+
+            _registers[timerValue] = (byte)_delayTimer;
         }
 
         //FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
@@ -441,13 +460,19 @@ namespace Chip8Emulator
         //FX15	Timer	delay_timer(Vx)	Sets the delay timer to VX.
         public void OpcodeFX15(ushort opcode)
         {
-            //TODO timer
+            int timerValue = opcode & 0x0F00;
+            timerValue = timerValue >> 8;
+
+            _delayTimer = _registers[timerValue];
         }
 
         //FX18	Sound	sound_timer(Vx)	Sets the sound timer to VX.
         public void OpcodeFX18(ushort opcode)
         {
-            //TODO Sound
+            int timerValue = opcode & 0x0F00;
+            timerValue = timerValue >> 8;
+
+            _audioTimer = _registers[timerValue];
         }
 
         //FX1E	MEM	I +=Vx	Adds VX to I.[3]
@@ -494,7 +519,7 @@ namespace Chip8Emulator
             int regx = opcode & 0x0F00;
             regx >>= 8;
 
-            for(int i = 0; i <= regx; ++i)
+            for (int i = 0; i <= regx; ++i)
             {
                 _gameMemory[_addressI + i] = _registers[i];
             }
@@ -508,7 +533,7 @@ namespace Chip8Emulator
             int regx = opcode & 0x0F00;
             regx >>= 8;
 
-            for(int i = 0; i < regx; ++i)
+            for (int i = 0; i < regx; ++i)
             {
                 _registers[i] = _gameMemory[_addressI + i];
             }
@@ -516,5 +541,12 @@ namespace Chip8Emulator
             _addressI = (ushort)(_addressI + regx + 1);
         }
 
+        public void CheckSound()
+        {
+            if(_audioTimer > 0)
+            {
+                SystemSounds.Beep.Play();
+            }
+        }
     }
 }
