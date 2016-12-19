@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
 
@@ -17,7 +18,6 @@ namespace Chip8Emulator
         ushort _programCounter;
         List<ushort> _stack = new List<ushort>();
         byte[,] _screenData = new byte[64, 32];
-        int _audioTimer;
         int _delayTimer;
 
         //C# Variables
@@ -132,8 +132,8 @@ namespace Chip8Emulator
                     default: break; //not yet handled
                 }
 
-                CheckSound();
                 _screenGame.UpdateEmulator(_screenData);
+                --_delayTimer;
                 Thread.Sleep(17);
             }
         }
@@ -142,6 +142,8 @@ namespace Chip8Emulator
         public void Opcode00E0(ushort opcode)
         {
             _screenGame.ClearEmulator();
+            Array.Clear(_screenData, 0, _screenData.Length);
+
         }
 
         //00EE Flow	return; Returns from a subroutine.
@@ -415,8 +417,14 @@ namespace Chip8Emulator
 
                     if ((data & mask) > 0)
                     {
-                        int x = coordx + xpixel;
-                        int y = coordy + yline;
+                        int x = (coordx + xpixel);
+                        int y = (coordy + yline);
+
+                        if (x > 63)
+                            x = 63;
+
+                        if (y > 31)
+                            y = 31;
 
                         if (_screenData[x, y] == 1)
                         {
@@ -471,8 +479,8 @@ namespace Chip8Emulator
         {
             int timerValue = opcode & 0x0F00;
             timerValue = timerValue >> 8;
-
-            _audioTimer = _registers[timerValue];
+            timerValue++;
+            BeepSound((int)(timerValue * (1000f / 60)));
         }
 
         //FX1E	MEM	I +=Vx	Adds VX to I.[3]
@@ -541,12 +549,10 @@ namespace Chip8Emulator
             _addressI = (ushort)(_addressI + regx + 1);
         }
 
-        public void CheckSound()
+        public void BeepSound(int time)
         {
-            if(_audioTimer > 0)
-            {
-                SystemSounds.Beep.Play();
-            }
+            if(time > 0)
+                Console.Beep(500, time);
         }
     }
 }

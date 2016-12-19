@@ -19,3 +19,22 @@ C:\Users\Mike\Documents\Visual Studio 2015\Projects\Chip8Emulator\Chip8Emulator\
 C:\Users\Mike\Documents\Visual Studio 2015\Projects\Chip8Emulator\Chip8Emulator\obj\Debug\Chip8Emulator.csproj.GenerateResource.Cache
 C:\Users\Mike\Documents\Visual Studio 2015\Projects\Chip8Emulator\Chip8Emulator\obj\Debug\Chip8Emulator.exe
 C:\Users\Mike\Documents\Visual Studio 2015\Projects\Chip8Emulator\Chip8Emulator\obj\Debug\Chip8Emulator.pdb
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\Chip8Emulator.exe
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\Chip8Emulator.pdb
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\MonoGame.Framework.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.MediaFoundation.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.XAudio2.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.DXGI.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.Direct3D11.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.Direct2D1.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.XInput.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.RawInput.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\bin\Debug\MonoGame.Framework.xml
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\obj\Debug\Chip8Emulator.csprojResolveAssemblyReference.cache
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\obj\Debug\Chip8Emulator.Form1.resources
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\obj\Debug\Chip8Emulator.Properties.Resources.resources
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\obj\Debug\Chip8Emulator.csproj.GenerateResource.Cache
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\obj\Debug\Chip8Emulator.exe
+C:\Users\telex\Documents\Mike\CSharpChip8\Chip8Emulator\obj\Debug\Chip8Emulator.pdb

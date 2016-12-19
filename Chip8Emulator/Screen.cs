@@ -16,8 +16,8 @@ namespace Chip8Emulator
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = 32;
-            graphics.PreferredBackBufferWidth = 64;
+            graphics.PreferredBackBufferHeight = 256;
+            graphics.PreferredBackBufferWidth = 512;
             Content.RootDirectory = "Content";
             emulator = new Emulator(this);
         }
@@ -26,7 +26,7 @@ namespace Chip8Emulator
         {
             base.Initialize();
             GraphicsDevice.Clear(Color.White);
-            Thread thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\UFO"));
+            Thread thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\BRIX"));
             thread.Start();
 
         }
@@ -34,14 +34,18 @@ namespace Chip8Emulator
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            pixel = new Texture2D(GraphicsDevice, 1, 1);
-            pixel.SetData<Color>(new Color[1] { Color.Black });
-            pixel2 = new Texture2D(GraphicsDevice, 1, 1);
-            pixel2.SetData<Color>(new Color[1] { Color.White });
+            pixel = new Texture2D(GraphicsDevice, 8, 8);
+            Color[] data = new Color[64];
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
+            pixel.SetData(data);
+            pixel2 = new Texture2D(GraphicsDevice, 8, 8);
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
+            pixel2.SetData(data);
         }
 
         protected override void UnloadContent()
         {
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -60,26 +64,25 @@ namespace Chip8Emulator
 
         public void UpdateEmulator(byte[,] screenData)
         {
+            spriteBatch.Begin();
             for (int i = 0; i < 63; ++i)
             {
                 for(int j = 0; j < 31; ++j)
                 {
                     if(screenData[i,j] == 1)
                     {
-                       Vector2 pos = new Vector2(i, j);
-                        spriteBatch.Begin();
+                       Vector2 pos = new Vector2(i * 8, j * 8);
                         spriteBatch.Draw(pixel, pos, Color.White);
-                        spriteBatch.End();
                     }
                     else
                     {
-                        Vector2 pos = new Vector2(i, j);
-                        spriteBatch.Begin();
+                        Vector2 pos = new Vector2(i * 8, j * 8);
                         spriteBatch.Draw(pixel2, pos, Color.White);
-                        spriteBatch.End();
                     }
                 }
             }
+
+            spriteBatch.End();
         }
 
         public void ClearEmulator()
