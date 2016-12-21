@@ -69,14 +69,13 @@ namespace Chip8Emulator
             {
                 for(int j = 0; j < 31; ++j)
                 {
-                    if(screenData[i,j] == 1)
+                    Vector2 pos = new Vector2(i * 8, j * 8);
+                    if (screenData[i,j] == 1)
                     {
-                       Vector2 pos = new Vector2(i * 8, j * 8);
                         spriteBatch.Draw(pixel, pos, Color.White);
                     }
                     else
                     {
-                        Vector2 pos = new Vector2(i * 8, j * 8);
                         spriteBatch.Draw(pixel2, pos, Color.White);
                     }
                 }

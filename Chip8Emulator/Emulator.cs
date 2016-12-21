@@ -19,6 +19,7 @@ namespace Chip8Emulator
         List<ushort> _stack = new List<ushort>();
         byte[,] _screenData = new byte[64, 32];
         int _delayTimer;
+        int _cpuTick;
 
         //C# Variables
         Game1 _screenGame;
@@ -64,6 +65,7 @@ namespace Chip8Emulator
 
         public void MainLoop()
         {
+            _cpuTick = 0;
             while (true)
             {
                 ushort opcode = GetNextOpCode();
@@ -132,8 +134,13 @@ namespace Chip8Emulator
                     default: break; //not yet handled
                 }
 
-                _screenGame.UpdateEmulator(_screenData);
-                --_delayTimer;
+                if (_cpuTick > 8)
+                {
+                    --_delayTimer;
+                    _cpuTick = 0;
+                }
+
+                ++_cpuTick;
                 Thread.Sleep(17);
             }
         }
@@ -142,6 +149,7 @@ namespace Chip8Emulator
         public void Opcode00E0(ushort opcode)
         {
             _screenGame.ClearEmulator();
+            _screenGame.UpdateEmulator(_screenData);
             Array.Clear(_screenData, 0, _screenData.Length);
 
         }
@@ -435,6 +443,8 @@ namespace Chip8Emulator
                     }
                 }
             }
+
+            _screenGame.UpdateEmulator(_screenData);
 
         }
 
