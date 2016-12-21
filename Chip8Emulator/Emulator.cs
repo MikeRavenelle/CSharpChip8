@@ -11,38 +11,60 @@ namespace Chip8Emulator
 {
     class Emulator
     {
+        const int FONT_INDEX = 0;
+        const int FONT_SIZE = 5 * 16;
         //Hardware
         byte[] _gameMemory = new byte[0xFFF];
         byte[] _registers = new byte[16];
         ushort _addressI;
         ushort _programCounter;
         List<ushort> _stack = new List<ushort>();
-        byte[,] _screenData = new byte[64, 32];
+        byte[,] _screenData = new byte[65, 33];
         int _delayTimer;
-        int _cpuTick;
-
+        bool _gameRunning;
+	int _cpuTick;
+	
         //C# Variables
         Game1 _screenGame;
         Random _random = new Random();
 
         //Font Array
-        byte[] _font = { 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10,
-                        0xF0, 0x90, 0x090, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20,
-                        0x40, 0x40, 0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90,
-                        0xE0, 0x90,0xE0, 0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0,
-                        0x80, 0xF0, 0x80, 0x80 };
+        byte[] _font = {
+             0xF0, 0x90, 0x90, 0x90, 0xF0,  // 0
+             0x20, 0x60, 0x20, 0x20, 0x70,  // 1
+             0xF0, 0x10, 0xF0, 0x80, 0xF0,  // 2
+             0xF0, 0x10, 0xF0, 0x10, 0xF0,  // 3
+             0x90, 0x90, 0xF0, 0x10, 0x10,  // 4
+             0xF0, 0x80, 0xF0, 0x10, 0xF0,  // 5
+             0xF0, 0x80, 0xF0, 0x90, 0xF0,  // 6
+             0xF0, 0x10, 0x20, 0x40, 0x40,  // 7
+             0xF0, 0x90, 0xF0, 0x90, 0xF0,  // 8
+             0xF0, 0x90, 0xF0, 0x10, 0xF0,  // 9
+             0xF0, 0x90, 0xF0, 0x90, 0x90,  // A
+             0xE0, 0x90, 0xE0, 0x90, 0xE0,  // B
+             0xF0, 0x80, 0x80, 0x80, 0xF0,  // C
+             0xE0, 0x90, 0x90, 0x90, 0xE0,  // D
+             0xF0, 0x80, 0xF0, 0x80, 0xF0,  // E
+             0xF0, 0x80, 0xF0, 0x80, 0x80 };  // F
 
         public Emulator(Game1 game)
         {
             _programCounter = 0x200;
             _addressI = 0;
             _screenGame = game;
+            _gameRunning = true;
+            Array.Copy(_font, 0, _gameMemory, 0, FONT_SIZE);
         }
 
         public void CPUReset()
         {
             _programCounter = 0x200;
             _addressI = 0;
+        }
+
+        public void TurnOff()
+        {
+            _gameRunning = false;
         }
 
         public void ReadGame(string gamePath)
@@ -65,8 +87,8 @@ namespace Chip8Emulator
 
         public void MainLoop()
         {
-            _cpuTick = 0;
-            while (true)
+	    _cpuTick = 0;
+            while (_gameRunning)
             {
                 ushort opcode = GetNextOpCode();
 
@@ -137,11 +159,11 @@ namespace Chip8Emulator
                 if (_cpuTick > 8)
                 {
                     --_delayTimer;
-                    _cpuTick = 0;
+		    _cpuTick = 0;
                 }
-
+                
+		Thread.Sleep(17);
                 ++_cpuTick;
-                Thread.Sleep(17);
             }
         }
 
@@ -428,11 +450,11 @@ namespace Chip8Emulator
                         int x = (coordx + xpixel);
                         int y = (coordy + yline);
 
-                        if (x > 63)
-                            x = 63;
+                        if (x > 64)
+                            x = 64;
 
-                        if (y > 31)
-                            y = 31;
+                        if (y > 32)
+                            y = 32;
 
                         if (_screenData[x, y] == 1)
                         {
@@ -508,7 +530,7 @@ namespace Chip8Emulator
             int regx = opcode & 0x0F00;
             regx = regx >> 8;
 
-            _addressI = _font[_registers[regx]];
+            _addressI = (ushort)(FONT_INDEX + (_registers[regx] * 5));
         }
 
         //FX33	BCD	set_BCD(Vx); (I+0)=BCD(3); (I+1)=BCD(2); (I+2)=BCD(1);

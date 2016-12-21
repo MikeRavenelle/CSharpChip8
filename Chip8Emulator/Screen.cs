@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Threading;
+using System;
 
 namespace Chip8Emulator
 {
@@ -12,6 +13,7 @@ namespace Chip8Emulator
         Texture2D pixel;
         Texture2D pixel2;
         Emulator emulator;
+        Thread thread;
 
         public Game1()
         {
@@ -26,9 +28,8 @@ namespace Chip8Emulator
         {
             base.Initialize();
             GraphicsDevice.Clear(Color.White);
-            Thread thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\BRIX"));
+            thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\BRIX"));
             thread.Start();
-
         }
 
         protected override void LoadContent()
@@ -53,8 +54,11 @@ namespace Chip8Emulator
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back ==
                 ButtonState.Pressed || Keyboard.GetState().IsKeyDown(
                 Keys.Escape))
+            {
                 Exit();
-            base.Update(gameTime);
+            }
+
+                base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -65,9 +69,9 @@ namespace Chip8Emulator
         public void UpdateEmulator(byte[,] screenData)
         {
             spriteBatch.Begin();
-            for (int i = 0; i < 63; ++i)
+            for (int i = 0; i < 64; ++i)
             {
-                for(int j = 0; j < 31; ++j)
+                for(int j = 0; j < 32; ++j)
                 {
                     Vector2 pos = new Vector2(i * 8, j * 8);
                     if (screenData[i,j] == 1)
@@ -83,6 +87,13 @@ namespace Chip8Emulator
 
             spriteBatch.End();
         }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            base.OnExiting(sender, args);
+            emulator.TurnOff();
+        }
+
 
         public void ClearEmulator()
         {
