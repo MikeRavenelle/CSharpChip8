@@ -15,6 +15,20 @@ namespace Chip8Emulator
         Emulator emulator;
         Thread thread;
         KeyboardState keyState;
+        string path;
+
+        public string Path
+        {
+            get
+            {
+                return path;
+            }
+
+            set
+            {
+                path = value;
+            }
+        }
 
         public Game1()
         {
@@ -29,7 +43,7 @@ namespace Chip8Emulator
         {
             base.Initialize();
             GraphicsDevice.Clear(Color.White);
-            thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\PONG2"));
+            thread = new Thread(() => emulator.ReadGame(path));
             thread.Start();
         }
 
@@ -100,6 +114,11 @@ namespace Chip8Emulator
         public void ClearEmulator()
         {
             graphics.GraphicsDevice.Clear(Color.White);
+        }
+
+        public void ResetEmulator()
+        {
+            emulator.CPUReset();
         }
 
         private void UpdateInput()
