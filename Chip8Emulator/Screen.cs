@@ -14,6 +14,7 @@ namespace Chip8Emulator
         Texture2D pixel2;
         Emulator emulator;
         Thread thread;
+        KeyboardState keyState;
 
         public Game1()
         {
@@ -28,7 +29,7 @@ namespace Chip8Emulator
         {
             base.Initialize();
             GraphicsDevice.Clear(Color.White);
-            thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\BRIX"));
+            thread = new Thread(() => emulator.ReadGame("D:\\Chip8Roms\\PONG2"));
             thread.Start();
         }
 
@@ -37,10 +38,10 @@ namespace Chip8Emulator
             spriteBatch = new SpriteBatch(GraphicsDevice);
             pixel = new Texture2D(GraphicsDevice, 8, 8);
             Color[] data = new Color[64];
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Green;
             pixel.SetData(data);
             pixel2 = new Texture2D(GraphicsDevice, 8, 8);
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
+            for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
             pixel2.SetData(data);
         }
 
@@ -58,7 +59,8 @@ namespace Chip8Emulator
                 Exit();
             }
 
-                base.Update(gameTime);
+            UpdateInput();
+            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -98,6 +100,156 @@ namespace Chip8Emulator
         public void ClearEmulator()
         {
             graphics.GraphicsDevice.Clear(Color.White);
+        }
+
+        private void UpdateInput()
+        {
+            keyState = Keyboard.GetState();
+
+            if (keyState.IsKeyDown(Keys.D1))
+            {
+                emulator.KeypadInput(0x01, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x01, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.D2))
+            {
+                emulator.KeypadInput(0x02, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x02, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.D3))
+            {
+                emulator.KeypadInput(0x03, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x03, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.D4))
+            {
+                emulator.KeypadInput(0x0C, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x0C, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.Q))
+            {
+                emulator.KeypadInput(0x04, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x04, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.W))
+            {
+                emulator.KeypadInput(0x05, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x05, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.E))
+            {
+                emulator.KeypadInput(0x06, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x06, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.R))
+            {
+                emulator.KeypadInput(0x0D, true);
+            }
+            else
+            {
+               //emulator.KeypadInput(0x0D, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.A))
+            {
+                emulator.KeypadInput(0x07, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x07, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.S))
+            {
+                emulator.KeypadInput(0x08, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x08, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.D))
+            {
+                emulator.KeypadInput(0x09, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x09, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.F))
+            {
+                emulator.KeypadInput(0x0E, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x0E, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.Z))
+            {
+                emulator.KeypadInput(0x0A, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x0A, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.X))
+            {
+                emulator.KeypadInput(0x00, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x00, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.C))
+            {
+                emulator.KeypadInput(0x0B, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x0B, false);
+            }
+
+            if (keyState.IsKeyDown(Keys.V))
+            {
+                emulator.KeypadInput(0x0F, true);
+            }
+            else
+            {
+                //emulator.KeypadInput(0x0F, false);
+            }
+
         }
     }
 }

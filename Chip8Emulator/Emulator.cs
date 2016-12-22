@@ -22,7 +22,8 @@ namespace Chip8Emulator
         byte[,] _screenData = new byte[65, 33];
         int _delayTimer;
         bool _gameRunning;
-	int _cpuTick;
+	    int _cpuTick;
+        bool[] _keyboard = new bool[16];
 	
         //C# Variables
         Game1 _screenGame;
@@ -87,7 +88,7 @@ namespace Chip8Emulator
 
         public void MainLoop()
         {
-	    _cpuTick = 0;
+	        _cpuTick = 0;
             while (_gameRunning)
             {
                 ushort opcode = GetNextOpCode();
@@ -158,11 +159,12 @@ namespace Chip8Emulator
 
                 if (_cpuTick > 8)
                 {
+                    ClearInput();
                     --_delayTimer;
-		    _cpuTick = 0;
+		            _cpuTick = 0;
                 }
                 
-		Thread.Sleep(17);
+		        Thread.Sleep(17);
                 ++_cpuTick;
             }
         }
@@ -473,13 +475,21 @@ namespace Chip8Emulator
         //EX9E	KeyOp	if(key()==Vx)	Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
         public void OpcodeEX9E(ushort opcode)
         {
-            //TODO keyboard
+            int key = opcode & 0x0F00;
+            key = key >> 8;
+
+            if (_keyboard[_registers[key]] == true)
+                _programCounter += 2;
         }
 
         //EXA1	KeyOp	if(key()!=Vx)	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
         public void OpcodeEXA1(ushort opcode)
         {
-            //TODO keyboard
+            int key = opcode & 0x0F00;
+            key = key >> 8;
+
+            if (_keyboard[_registers[key]] == false)
+                _programCounter += 2;
         }
 
         //FX07	Timer	Vx = get_delay()	Sets VX to the value of the delay timer.
@@ -494,7 +504,7 @@ namespace Chip8Emulator
         //FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
         public void OpcodeFX0A(ushort opcode)
         {
-            //TODO keyboard
+            while (_keyboard.All(x => !x));
         }
 
         //FX15	Timer	delay_timer(Vx)	Sets the delay timer to VX.
@@ -585,6 +595,19 @@ namespace Chip8Emulator
         {
             if(time > 0)
                 Console.Beep(500, time);
+        }
+
+        public void KeypadInput(int key, bool down)
+        {
+            _keyboard[key] = down;
+        }
+
+        public void ClearInput()
+        {
+            for(int i = 0; i < 16; ++i)
+            {
+                _keyboard[i] = false;
+            }
         }
     }
 }
