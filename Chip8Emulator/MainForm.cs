@@ -12,10 +12,10 @@ using System.Windows.Forms;
 
 namespace Chip8Emulator
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        Game1 game;
-        public Form1()
+        GameScreen game;
+        public MainForm()
         {
             InitializeComponent();
             resetMenu.Enabled = false;
@@ -28,19 +28,30 @@ namespace Chip8Emulator
 
         public void StartScreen(string path)
         {
-            using (game = new Game1())
+            using (game = new GameScreen(path))
             {
+                GameScreen.RaiseUpdateEmulator += Emulator_RaiseUpdateEmulator;
+                GameScreen.RaiseClearEmulator += Emulator_RaiseClearEmulator;
                 game.Path = path;
                 game.Run();
             }
+        }
+
+        private void Emulator_RaiseClearEmulator(object sender, EventArgs e)
+        {
+            this.BeginInvoke(new Action(game.ClearEmulator));    
+        }
+
+        private void Emulator_RaiseUpdateEmulator(object sender, byte[,] e)
+        {
+            this.BeginInvoke(new Action(() => game.UpdateEmulator(e)));
         }
 
         private void loadGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Thread screenThread = new Thread(() => StartScreen(openFileDialog1.FileName));
-                screenThread.Start();
+                StartScreen(openFileDialog1.FileName);
             }
         }
 

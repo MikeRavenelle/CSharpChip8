@@ -26,8 +26,11 @@ namespace Chip8Emulator
         bool[] _keyboard = new bool[16];
 	
         //C# Variables
-        Game1 _screenGame;
         Random _random = new Random();
+
+        //GUI Events
+        public static event EventHandler<byte[,]> RaiseUpdateEmulator;
+        public static event EventHandler RaiseClearEmulator;
 
         //Font Array
         byte[] _font = {
@@ -48,11 +51,10 @@ namespace Chip8Emulator
              0xF0, 0x80, 0xF0, 0x80, 0xF0,  // E
              0xF0, 0x80, 0xF0, 0x80, 0x80 };  // F
 
-        public Emulator(Game1 game)
+        public Emulator()
         {
             _programCounter = 0x200;
             _addressI = 0;
-            _screenGame = game;
             _gameRunning = true;
             Array.Copy(_font, 0, _gameMemory, 0, FONT_SIZE);
         }
@@ -75,7 +77,7 @@ namespace Chip8Emulator
             MainLoop();
         }
 
-        public ushort GetNextOpCode()
+        public ushort GetNextInstruction()
         {
             ushort res = 0;
             res = _gameMemory[_programCounter];
@@ -91,67 +93,67 @@ namespace Chip8Emulator
 	        _cpuTick = 0;
             while (_gameRunning)
             {
-                ushort opcode = GetNextOpCode();
+                ushort instruction = GetNextInstruction();
 
-                switch (opcode & 0xF000)
+                switch (instruction & 0xF000)
                 {
                     case 0x0000:
-                        switch (opcode & 0x000F)
+                        switch (instruction & 0x000F)
                         {
-                            case 0x0000: Opcode00E0(opcode); break; //clear screen
-                            case 0x000E: Opcode00EE(opcode); break;
+                            case 0x0000: Opcode00E0(instruction); break; //clear screen
+                            case 0x000E: Opcode00EE(instruction); break;
                         }
                         break;
-                    case 0x1000: Opcode1NNN(opcode); break;
-                    case 0x2000: Opcode2NNN(opcode); break;
-                    case 0x3000: Opcode3XNN(opcode); break;
-                    case 0x4000: Opcode4XNN(opcode); break;
-                    case 0x5000: Opcode5XY0(opcode); break;
-                    case 0x6000: Opcode6XNN(opcode); break;
-                    case 0x7000: Opcode7XNN(opcode); break;
+                    case 0x1000: Opcode1NNN(instruction); break;
+                    case 0x2000: Opcode2NNN(instruction); break;
+                    case 0x3000: Opcode3XNN(instruction); break;
+                    case 0x4000: Opcode4XNN(instruction); break;
+                    case 0x5000: Opcode5XY0(instruction); break;
+                    case 0x6000: Opcode6XNN(instruction); break;
+                    case 0x7000: Opcode7XNN(instruction); break;
                     case 0x8000:
-                        switch (opcode & 0x000F)
+                        switch (instruction & 0x000F)
                         {
-                            case 0x0000: Opcode8XY0(opcode); break;
-                            case 0x0001: Opcode8XY1(opcode); break;
-                            case 0x0002: Opcode8XY2(opcode); break;
-                            case 0x0003: Opcode8XY3(opcode); break;
-                            case 0x0004: Opcode8XY4(opcode); break;
-                            case 0x0005: Opcode8XY5(opcode); break;
-                            case 0x0006: Opcode8XY6(opcode); break;
-                            case 0x0007: Opcode8XY7(opcode); break;
-                            case 0x000E: Opcode8XYE(opcode); break;
+                            case 0x0000: Opcode8XY0(instruction); break;
+                            case 0x0001: Opcode8XY1(instruction); break;
+                            case 0x0002: Opcode8XY2(instruction); break;
+                            case 0x0003: Opcode8XY3(instruction); break;
+                            case 0x0004: Opcode8XY4(instruction); break;
+                            case 0x0005: Opcode8XY5(instruction); break;
+                            case 0x0006: Opcode8XY6(instruction); break;
+                            case 0x0007: Opcode8XY7(instruction); break;
+                            case 0x000E: Opcode8XYE(instruction); break;
                         }
                         break;
-                    case 0x9000: Opcode9XY0(opcode); break;
-                    case 0xA000: OpcodeANNN(opcode); break;
-                    case 0xB000: OpcodeBNNN(opcode); break;
-                    case 0xC000: OpcodeCXNN(opcode); break;
-                    case 0xD000: OpcodeDXYN(opcode); break;
+                    case 0x9000: Opcode9XY0(instruction); break;
+                    case 0xA000: OpcodeANNN(instruction); break;
+                    case 0xB000: OpcodeBNNN(instruction); break;
+                    case 0xC000: OpcodeCXNN(instruction); break;
+                    case 0xD000: OpcodeDXYN(instruction); break;
                     case 0xE000:
-                        switch (opcode & 0x000F)
+                        switch (instruction & 0x000F)
                         {
-                            case 0x000E: OpcodeEX9E(opcode); break;
-                            case 0x0001: OpcodeEXA1(opcode); break;
+                            case 0x000E: OpcodeEX9E(instruction); break;
+                            case 0x0001: OpcodeEXA1(instruction); break;
                         }
                         break;
                     case 0xF000:
-                        switch (opcode & 0x000F)
+                        switch (instruction & 0x000F)
                         {
-                            case 0x0003: OpcodeFX33(opcode); break;
+                            case 0x0003: OpcodeFX33(instruction); break;
                             case 0x0005:
-                                switch (opcode & 0x00F0)
+                                switch (instruction & 0x00F0)
                                 {
-                                    case 0x0010: OpcodeFX15(opcode); break;
-                                    case 0x0050: OpcodeFX55(opcode); break;
-                                    case 0x0060: OpcodeFX65(opcode); break;
+                                    case 0x0010: OpcodeFX15(instruction); break;
+                                    case 0x0050: OpcodeFX55(instruction); break;
+                                    case 0x0060: OpcodeFX65(instruction); break;
                                 }
                                 break;
-                            case 0x0007: OpcodeFX07(opcode); break;
-                            case 0x000A: OpcodeFX0A(opcode); break;
-                            case 0x0008: OpcodeFX18(opcode); break;
-                            case 0x000E: OpcodeFX1E(opcode); break;
-                            case 0x0009: OpcodeFX29(opcode); break;
+                            case 0x0007: OpcodeFX07(instruction); break;
+                            case 0x000A: OpcodeFX0A(instruction); break;
+                            case 0x0008: OpcodeFX18(instruction); break;
+                            case 0x000E: OpcodeFX1E(instruction); break;
+                            case 0x0009: OpcodeFX29(instruction); break;
                         }
                         break;
                     default: break; //not yet handled
@@ -164,7 +166,7 @@ namespace Chip8Emulator
 		            _cpuTick = 0;
                 }
                 
-		        Thread.Sleep(17);
+		        Thread.Sleep(25);
                 ++_cpuTick;
             }
         }
@@ -172,8 +174,8 @@ namespace Chip8Emulator
         //00E0	Display disp_clear()    Clears the screen.
         public void Opcode00E0(ushort opcode)
         {
-            _screenGame.ClearEmulator();
-            _screenGame.UpdateEmulator(_screenData);
+            RaiseClearEmulator.Invoke(this, null);
+            RaiseUpdateEmulator.Invoke(this, _screenData);
             Array.Clear(_screenData, 0, _screenData.Length);
 
         }
@@ -468,8 +470,7 @@ namespace Chip8Emulator
                 }
             }
 
-            _screenGame.UpdateEmulator(_screenData);
-
+            RaiseUpdateEmulator.Invoke(this, _screenData);
         }
 
         //EX9E	KeyOp	if(key()==Vx)	Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)

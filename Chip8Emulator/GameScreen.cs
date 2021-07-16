@@ -6,7 +6,7 @@ using System;
 
 namespace Chip8Emulator
 {
-    public class Game1 : Game
+    public class GameScreen : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -16,6 +16,9 @@ namespace Chip8Emulator
         Thread thread;
         KeyboardState keyState;
         string path;
+
+        public static event EventHandler<byte[,]> RaiseUpdateEmulator;
+        public static event EventHandler RaiseClearEmulator;
 
         public string Path
         {
@@ -30,17 +33,30 @@ namespace Chip8Emulator
             }
         }
 
-        public Game1()
+        public GameScreen(string path)
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = 256;
-            graphics.PreferredBackBufferWidth = 512;
             Content.RootDirectory = "Content";
-            emulator = new Emulator(this);
+            Emulator.RaiseUpdateEmulator += Emulator_RaiseUpdateEmulator;
+            Emulator.RaiseClearEmulator += Emulator_RaiseClearEmulator;
+            emulator = new Emulator();
+        }
+
+        private void Emulator_RaiseClearEmulator(object sender, EventArgs e)
+        {
+            RaiseClearEmulator.Invoke(this, null);
+        }
+
+        private void Emulator_RaiseUpdateEmulator(object sender, byte[,] m)
+        {
+            RaiseUpdateEmulator.Invoke(this, m);
         }
 
         protected override void Initialize()
         {
+            graphics.PreferredBackBufferHeight = 256;
+            graphics.PreferredBackBufferWidth = 512;
+            graphics.ApplyChanges();
             base.Initialize();
             GraphicsDevice.Clear(Color.White);
             thread = new Thread(() => emulator.ReadGame(path));
@@ -84,24 +100,27 @@ namespace Chip8Emulator
 
         public void UpdateEmulator(byte[,] screenData)
         {
-            spriteBatch.Begin();
-            for (int i = 0; i < 64; ++i)
+            if (spriteBatch != null)
             {
-                for(int j = 0; j < 32; ++j)
+                spriteBatch.Begin();
+                for (int i = 0; i < 64; ++i)
                 {
-                    Vector2 pos = new Vector2(i * 8, j * 8);
-                    if (screenData[i,j] == 1)
+                    for (int j = 0; j < 32; ++j)
                     {
-                        spriteBatch.Draw(pixel, pos, Color.White);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(pixel2, pos, Color.White);
+                        Vector2 pos = new Vector2(i * 8, j * 8);
+                        if (screenData[i, j] == 1)
+                        {
+                            spriteBatch.Draw(pixel, pos, Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.Draw(pixel2, pos, Color.Green);
+                        }
                     }
                 }
-            }
 
-            spriteBatch.End();
+                spriteBatch.End();
+            }
         }
 
         protected override void OnExiting(object sender, EventArgs args)
@@ -113,7 +132,7 @@ namespace Chip8Emulator
 
         public void ClearEmulator()
         {
-            graphics.GraphicsDevice.Clear(Color.White);
+            //graphics.GraphicsDevice.Clear(Color.White);
         }
 
         public void ResetEmulator()
