@@ -2,12 +2,15 @@
 using Eto.Forms;
 using Eto.Drawing;
 using Chip8Emulator;
+using Microsoft.Xna.Framework;
+using Chip8Emulator.Chip8;
 
 namespace Chip8Emulator_eto
 {
 	public partial class MainForm : Form
 	{
-		public MainForm()
+        GameScreen _game;
+        public MainForm()
 		{
 			Title = "Chip8Emulator";
 			MinimumSize = new Size(400, 200);
@@ -32,8 +35,12 @@ namespace Chip8Emulator_eto
 
 				if (result == DialogResult.Ok)
 				{
-					using var game = new Chip8Emulator.Chip8.GameScreen(dialog.FileName);
-					game.Run();
+					using (_game = new GameScreen(dialog.FileName))
+					{
+						GameScreen.RaiseUpdateEmulator += Emulator_RaiseUpdateEmulator;
+						GameScreen.RaiseClearEmulator += Emulator_RaiseClearEmulator;
+						_game.Run();
+					}
 				}
 			};
 
@@ -50,6 +57,16 @@ namespace Chip8Emulator_eto
 				QuitItem = quitCommand,
 			};
 		}
-	}
+
+        private void Emulator_RaiseClearEmulator(object sender, EventArgs e)
+        {
+            _game.ClearEmulator();
+        }
+
+        private void Emulator_RaiseUpdateEmulator(object sender, byte[,] e)
+        {
+            _game.UpdateEmulator(e);
+        }
+    }
 }
 

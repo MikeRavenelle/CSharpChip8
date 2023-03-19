@@ -46,14 +46,12 @@ namespace Chip8Emulator.Chip8
 
         private void Emulator_RaiseClearEmulator(object sender, EventArgs e)
         {
-            //RaiseClearEmulator.Invoke(this, null);
-            ClearEmulator();
+            RaiseClearEmulator.Invoke(this, null);
         }
 
         private void Emulator_RaiseUpdateEmulator(object sender, byte[,] m)
         {
-            //RaiseUpdateEmulator.Invoke(this, m);
-            UpdateEmulator(m);
+            RaiseUpdateEmulator.Invoke(this, m);
         }
 
         protected override void Initialize()
@@ -138,7 +136,9 @@ namespace Chip8Emulator.Chip8
 
         public void ClearEmulator()
         {
-            _graphics.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
+            if (_graphics.GraphicsDevice != null)
+            {
+            }
         }
 
         public void ResetEmulator()
