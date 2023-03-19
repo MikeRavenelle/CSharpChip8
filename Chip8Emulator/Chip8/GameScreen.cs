@@ -136,9 +136,7 @@ namespace Chip8Emulator.Chip8
 
         public void ClearEmulator()
         {
-            if (_graphics.GraphicsDevice != null)
-            {
-            }
+            _graphics.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
         }
 
         public void ResetEmulator()

@@ -60,12 +60,18 @@ namespace Chip8Emulator_eto
 
         private void Emulator_RaiseClearEmulator(object sender, EventArgs e)
         {
-            _game.ClearEmulator();
+            Eto.Forms.Application.Instance.Invoke(() =>
+            {
+                _game.ClearEmulator();
+            });
         }
 
         private void Emulator_RaiseUpdateEmulator(object sender, byte[,] e)
         {
-            _game.UpdateEmulator(e);
+            Eto.Forms.Application.Instance.Invoke(() =>
+            {
+                _game.UpdateEmulator(e);
+            });
         }
     }
 }
