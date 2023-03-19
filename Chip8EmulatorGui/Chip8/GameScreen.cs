@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Threading;
 using System;
 
-namespace Chip8Emulator
+namespace Chip8Emulator.Chip8
 {
     public class GameScreen : Game
     {
@@ -59,7 +59,7 @@ namespace Chip8Emulator
             _graphics.PreferredBackBufferWidth = 512;
             _graphics.ApplyChanges();
             base.Initialize();
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
             _thread = new Thread(() => _emulator.ReadGame(_path));
             _thread.Start();
         }
@@ -68,11 +68,11 @@ namespace Chip8Emulator
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _pixel = new Texture2D(GraphicsDevice, 8, 8);
-            Color[] data = new Color[64];
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.Green;
+            Microsoft.Xna.Framework.Color[] data = new Microsoft.Xna.Framework.Color[64];
+            for (int i = 0; i < data.Length; ++i) data[i] = Microsoft.Xna.Framework.Color.Green;
             _pixel.SetData(data);
             _pixel2 = new Texture2D(GraphicsDevice, 8, 8);
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.Black;
+            for (int i = 0; i < data.Length; ++i) data[i] = Microsoft.Xna.Framework.Color.Black;
             _pixel2.SetData(data);
         }
 
@@ -84,7 +84,7 @@ namespace Chip8Emulator
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back ==
-                ButtonState.Pressed || Keyboard.GetState().IsKeyDown(
+                ButtonState.Pressed || Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(
                 Keys.Escape))
             {
                 Exit();
@@ -96,7 +96,7 @@ namespace Chip8Emulator
 
         protected override void Draw(GameTime gameTime)
         {
-            if (_spriteBatch != null)
+            if (_spriteBatch != null && _screenData != null)
             {
                 _spriteBatch.Begin();
                 for (int i = 0; i < 64; ++i)
@@ -106,11 +106,11 @@ namespace Chip8Emulator
                         Vector2 pos = new Vector2(i * 8, j * 8);
                         if (_screenData[i, j] == 1)
                         {
-                            _spriteBatch.Draw(_pixel, pos, Color.Green);
+                            _spriteBatch.Draw(_pixel, pos, Microsoft.Xna.Framework.Color.Green);
                         }
                         else
                         {
-                            _spriteBatch.Draw(_pixel2, pos, Color.Green);
+                            _spriteBatch.Draw(_pixel2, pos, Microsoft.Xna.Framework.Color.Green);
                         }
                     }
                 }
@@ -135,7 +135,7 @@ namespace Chip8Emulator
 
         public void ClearEmulator()
         {
-            _graphics.GraphicsDevice.Clear(Color.White);
+            _graphics.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
         }
 
         public void ResetEmulator()
@@ -145,7 +145,7 @@ namespace Chip8Emulator
 
         private void UpdateInput()
         {
-            _keyState = Keyboard.GetState();
+            _keyState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
 
             if (_keyState.IsKeyDown(Keys.D1))
             {
@@ -216,7 +216,7 @@ namespace Chip8Emulator
             }
             else
             {
-               //emulator.KeypadInput(0x0D, false);
+                //emulator.KeypadInput(0x0D, false);
             }
 
             if (_keyState.IsKeyDown(Keys.A))

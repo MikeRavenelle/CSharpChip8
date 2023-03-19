@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -7,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
 
-namespace Chip8Emulator
+namespace Chip8Emulator.Chip8
 {
     class Emulator
     {
@@ -22,9 +23,9 @@ namespace Chip8Emulator
         byte[,] _screenData = new byte[65, 33];
         int _delayTimer;
         bool _gameRunning;
-	    int _cpuTick;
+        int _cpuTick;
         bool[] _keyboard = new bool[16];
-	
+
         //C# Variables
         Random _random = new Random();
 
@@ -90,7 +91,7 @@ namespace Chip8Emulator
 
         public void MainLoop()
         {
-	        _cpuTick = 0;
+            _cpuTick = 0;
             while (_gameRunning)
             {
                 ushort instruction = GetNextInstruction();
@@ -163,10 +164,10 @@ namespace Chip8Emulator
                 {
                     ClearInput();
                     --_delayTimer;
-		            _cpuTick = 0;
+                    _cpuTick = 0;
                 }
-                
-		        Thread.Sleep(7);                ++_cpuTick;
+
+                Thread.Sleep(7); ++_cpuTick;
             }
         }
 
@@ -317,7 +318,7 @@ namespace Chip8Emulator
             int xval = _registers[regx];
             int yval = _registers[regy];
 
-            if ((xval + yval) > 255)
+            if (xval + yval > 255)
                 _registers[0xF] = 1;
 
             _registers[regx] += (byte)yval;
@@ -416,7 +417,7 @@ namespace Chip8Emulator
             _registers[0xF] = 1;
             int regx = opcode & 0x0F00;
             regx = regx >> 8;
-            byte randomNumber = (byte)(_random.Next(0, 255));
+            byte randomNumber = (byte)_random.Next(0, 255);
 
             _registers[regx] = (byte)(randomNumber & (opcode & 0x00FF));
         }
@@ -450,8 +451,8 @@ namespace Chip8Emulator
 
                     if ((data & mask) > 0)
                     {
-                        int x = (coordx + xpixel);
-                        int y = (coordy + yline);
+                        int x = coordx + xpixel;
+                        int y = coordy + yline;
 
                         if (x > 64)
                             x = 64;
@@ -504,7 +505,7 @@ namespace Chip8Emulator
         //FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
         public void OpcodeFX0A(ushort opcode)
         {
-            while (_keyboard.All(x => !x));
+            while (_keyboard.All(x => !x)) ;
         }
 
         //FX15	Timer	delay_timer(Vx)	Sets the delay timer to VX.
@@ -540,7 +541,7 @@ namespace Chip8Emulator
             int regx = opcode & 0x0F00;
             regx = regx >> 8;
 
-            _addressI = (ushort)(FONT_INDEX + (_registers[regx] * 5));
+            _addressI = (ushort)(FONT_INDEX + _registers[regx] * 5);
         }
 
         //FX33	BCD	set_BCD(Vx); (I+0)=BCD(3); (I+1)=BCD(2); (I+2)=BCD(1);
@@ -555,7 +556,7 @@ namespace Chip8Emulator
             int value = _registers[regx];
 
             int hundreds = value / 100;
-            int tens = (value / 10) % 10;
+            int tens = value / 10 % 10;
             int units = value % 10;
 
             _gameMemory[_addressI] = (byte)hundreds;
@@ -593,8 +594,17 @@ namespace Chip8Emulator
 
         public void BeepSound(int time)
         {
-            if(time > 0)
-                Console.Beep(500, time);
+            if (time > 0)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Console.Beep(500, time);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = "say \"beep\"", };
+                    Process proc = new Process() { StartInfo = startInfo, };
+                    proc.Start();
+                }
         }
 
         public void KeypadInput(int key, bool down)
@@ -604,7 +614,7 @@ namespace Chip8Emulator
 
         public void ClearInput()
         {
-            for(int i = 0; i < 16; ++i)
+            for (int i = 0; i < 16; ++i)
             {
                 _keyboard[i] = false;
             }

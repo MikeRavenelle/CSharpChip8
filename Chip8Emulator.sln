@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chip8Emulator", "Chip8Emulator\Chip8Emulator.csproj", "{15760DA2-2CD2-46AF-9A29-545CCCDA2DC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chip8Emulator", "Chip8EmulatorGui\Chip8Emulator.csproj", "{46DE4D72-3820-47D1-87C8-14F2596C3A01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{15760DA2-2CD2-46AF-9A29-545CCCDA2DC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15760DA2-2CD2-46AF-9A29-545CCCDA2DC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15760DA2-2CD2-46AF-9A29-545CCCDA2DC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15760DA2-2CD2-46AF-9A29-545CCCDA2DC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46DE4D72-3820-47D1-87C8-14F2596C3A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46DE4D72-3820-47D1-87C8-14F2596C3A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46DE4D72-3820-47D1-87C8-14F2596C3A01}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{46DE4D72-3820-47D1-87C8-14F2596C3A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46DE4D72-3820-47D1-87C8-14F2596C3A01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46DE4D72-3820-47D1-87C8-14F2596C3A01}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {79032387-AD45-4886-AAF8-E391388DD20D}
 	EndGlobalSection
 EndGlobal
