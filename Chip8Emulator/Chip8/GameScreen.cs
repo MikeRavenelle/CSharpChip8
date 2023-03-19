@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Threading;
 using System;
-using System.Runtime.InteropServices;
 
 namespace Chip8Emulator.Chip8
 {
@@ -37,6 +36,7 @@ namespace Chip8Emulator.Chip8
 
         public GameScreen(string path)
         {
+            _path = path;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             Emulator.RaiseUpdateEmulator += Emulator_RaiseUpdateEmulator;
@@ -46,12 +46,14 @@ namespace Chip8Emulator.Chip8
 
         private void Emulator_RaiseClearEmulator(object sender, EventArgs e)
         {
-            RaiseClearEmulator.Invoke(this, null);
+            //RaiseClearEmulator.Invoke(this, null);
+            ClearEmulator();
         }
 
         private void Emulator_RaiseUpdateEmulator(object sender, byte[,] m)
         {
-            RaiseUpdateEmulator.Invoke(this, m);
+            //RaiseUpdateEmulator.Invoke(this, m);
+            UpdateEmulator(m);
         }
 
         protected override void Initialize()
@@ -88,9 +90,7 @@ namespace Chip8Emulator.Chip8
                 ButtonState.Pressed || Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(
                 Keys.Escape))
             {
-#if WINDOWS
                 Exit();
-#endif
             }
 
             UpdateInput();

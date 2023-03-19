@@ -601,9 +601,17 @@ namespace Chip8Emulator.Chip8
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = "say \"beep\"", };
-                    Process proc = new Process() { StartInfo = startInfo, };
-                    proc.Start();
+                    try
+                    {
+                        var arguments = string.Format("{0} {1} {2}", "/System/Library/Sounds/Tink.aiff", "-v", "10");
+                        ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "afplay", Arguments = arguments };
+                        Process proc = new Process() { StartInfo = startInfo, };
+                        proc.Start();
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                 }
         }
 

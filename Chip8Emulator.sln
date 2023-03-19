@@ -5,10 +5,6 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chip8Emulator", "Chip8Emulator\Chip8Emulator.csproj", "{46DE4D72-3820-47D1-87C8-14F2596C3A01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chip8Emulator_mono", "Chip8Emulator_mono\Chip8Emulator_mono.csproj", "{0AD8C7BB-15EF-4E3A-86E8-66E03D1E1435}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chip8Emulator_Eto", "Chip8Emulator_eto\Chip8Emulator_Eto.csproj", "{A55DC7BF-84E0-4C8D-B7FF-608CC28608F1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
