@@ -111,7 +111,7 @@ namespace Chip8Emulator.Chip8
                         }
                         else
                         {
-                            _spriteBatch.Draw(_pixel2, pos, Microsoft.Xna.Framework.Color.Green);
+                            _spriteBatch.Draw(_pixel2, pos, Microsoft.Xna.Framework.Color.Black);
                         }
                     }
                 }

@@ -74,7 +74,7 @@ namespace Chip8Emulator.Chip8
         public void ReadGame(string gamePath)
         {
             FileStream fileStream = new FileStream(gamePath, FileMode.Open, FileAccess.Read);
-            fileStream.Read(_gameMemory, 0x200, 0xdff);
+            fileStream.Read(_gameMemory, 0x200, 0xDFF);
             MainLoop();
         }
 
@@ -167,7 +167,8 @@ namespace Chip8Emulator.Chip8
                     _cpuTick = 0;
                 }
 
-                Thread.Sleep(7); ++_cpuTick;
+                Thread.Sleep(1);
+                ++_cpuTick;
             }
         }
 
@@ -553,15 +554,9 @@ namespace Chip8Emulator.Chip8
             int regx = opcode & 0x0F00;
             regx >>= 8;
 
-            int value = _registers[regx];
-
-            int hundreds = value / 100;
-            int tens = value / 10 % 10;
-            int units = value % 10;
-
-            _gameMemory[_addressI] = (byte)hundreds;
-            _gameMemory[_addressI + 1] = (byte)tens;
-            _gameMemory[_addressI + 2] = (byte)units;
+            _gameMemory[_addressI] = (byte)(_registers[regx] / 100);
+            _gameMemory[_addressI + 1] = (byte)((_registers[regx] / 10) % 10);
+            _gameMemory[_addressI + 2] = (byte)(_registers[regx] % 10);
         }
 
         //FX55	MEM	reg_dump(Vx,&I)	Stores V0 to VX (including VX) in memory starting at address I.[4]
@@ -575,7 +570,7 @@ namespace Chip8Emulator.Chip8
                 _gameMemory[_addressI + i] = _registers[i];
             }
 
-            _addressI = (ushort)(_addressI + regx + 1);
+            _addressI += (ushort)(regx + 1);
         }
 
         //FX65	MEM	reg_load(Vx,&I)	Fills V0 to VX (including VX) with values from memory starting at address I.[4]
@@ -584,7 +579,8 @@ namespace Chip8Emulator.Chip8
             int regx = opcode & 0x0F00;
             regx >>= 8;
 
-            for (int i = 0; i < regx; ++i)
+            //I HAD < instead of <= AND IT CAUSED 3 INSTRUCTIONS TO FAIL TESTASDSAD?D?FD?FF?
+            for (int i = 0; i <= regx; ++i)
             {
                 _registers[i] = _gameMemory[_addressI + i];
             }
